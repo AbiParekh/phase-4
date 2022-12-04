@@ -1,6 +1,7 @@
 CSE 687 Object Oriented Design Project
 MapReduce
 Phase #4
+
 Background
 In Stage 4, you will be extending your Project 3 solution:
 1)	Create a stub process that sits and listens for messages (using sockets). The stub will get a message from the controller to tell it to create child processes (either map or reduce). The stub programs will be assumed to be always running (i.e. just start these manually before you run your controller).
@@ -20,14 +21,22 @@ Methodology Requirements
 4)	All changes must go through a code review by your partner(s). 
 5)	All partners must submit a reasonably equal number of check-ins for each project, as evidenced by git submissions. 
 6)	All partners must treat each other with respect. 
+
+
 Technical Requirements 
 1)	Errors, warnings, information, fatal errors, etc., will be logged.  Boost Logging can be used (https://www.boost.org/doc/libs/1_63_0/libs/log/doc/html/index.html).
+
+
 Documentation Requirements 
 Architecture
 The architecture of your project describes the various components that make up your project.  These are not the actual classes and data, but more of a functional description.
 The architecture of your project must include a system block diagram which shows each high-level component of your Map-Reduce system, along with any major sub-components.  The block diagram must also include interface definitions – connections between the high-level components, and connections between the major sub-components within a high-level component.  
+
+
 Design
 The design of your project is intended to show how you broke down the architectural functionality into actual classes, including data.  You can describe your design in class diagrams (UML), pictures, text descriptions, or any combination of these.  You must indicate how the design relates to the architecture – which classes implement which component(s), and what data are flowing through each interface.
+
+
 Rubric 
 1)	Code behavioral correctness: 50% 
 Along with above requirements, code must reasonably handle all error scenarios. Code must never crash or hang. 
