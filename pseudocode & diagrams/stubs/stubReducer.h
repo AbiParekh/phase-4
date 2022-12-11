@@ -19,6 +19,8 @@ class stubReducer {
         
         ~stubReducer();
 
+        void reducerFunc();
+        
         bool createFirstReducerThread(void* (*func)(void*), parameters* param);
 
         bool createSecondReducerThread(void* (*func)(void*), parameters* param);

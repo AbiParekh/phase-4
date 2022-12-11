@@ -9,6 +9,7 @@
 
 
 using namespace std;
+using namespace std::literals::chrono_literals;
 
 struct parameters {
     int port;
@@ -16,12 +17,17 @@ struct parameters {
     //any other parameters can go here
 };
  
- /*
-void reducer() {
-    printf("")
-};
+static bool rThreadFinished = false;
 
-*/
+ void reducerFunc(){
+
+    while(!rThreadFinished){
+        //do stuff
+        //sleep(1);
+        std::cout << "Reducer thread running" << std::endl;
+        std::this_thread::sleep_for(1s);
+    }
+}
 bool stubReducer::createFirstReducerThread(void* (*func)(void*), parameters* param) {
     bool firstThreadCreated = false;
 

@@ -4,7 +4,6 @@
 #ifndef STUBMAPPER_H
 #define STUBMAPPER_H
 
-#pragma once
 
 #include <thread>
 #include <chrono>
@@ -19,6 +18,9 @@ class stubMapper {
     public:
         stubMapper();
         ~stubMapper();
+
+        void mapperFunc();
+
         bool createMapperThreads(void* (*func)(void*), parameters* param);
 
     protected:
@@ -27,6 +29,6 @@ class stubMapper {
     private:
 
 
-}
+};
 
 #endif //STUBMAPPER_H
