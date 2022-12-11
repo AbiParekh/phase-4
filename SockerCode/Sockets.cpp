@@ -680,7 +680,7 @@ bool ClientHandler::testBufferHandling(Socket& socket_)
 
 //----< test string handling - server echos back client sent string >--------
 
-void clientTestStringHandling(Socket& si)
+void Sockets::clientTestStringHandling(Socket& si)
 {
     std::string command = "TEST_STRING_HANDLING";
     si.sendString(command);
@@ -776,7 +776,12 @@ void clientTestBufferHandling(Socket& si)
         }
     }
 }
+
+
+/*
 //----< demonstration >------------------------------------------------------
+#ifdef FALSE
+
 
 int main(int argc, char* argv[])
 {
@@ -820,5 +825,7 @@ int main(int argc, char* argv[])
         std::cout << "\n  " << ex.what() << "\n\n";
     }
 }
+#endif // FALSE
+*/
 
 

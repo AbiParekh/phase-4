@@ -130,9 +130,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\common\Phase4Messages.h" />
+    <ClInclude Include="..\SockerCode\CodeUtilities.h" />
+    <ClInclude Include="..\SockerCode\Cpp11-BlockingQueue.h" />
+    <ClInclude Include="..\SockerCode\Logger.h" />
+    <ClInclude Include="..\SockerCode\Sockets.h" />
+    <ClInclude Include="..\SockerCode\StringUtilities.h" />
+    <ClInclude Include="..\SockerCode\WindowsHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\Phase4Messages.cpp" />
+    <ClCompile Include="..\SockerCode\CodeUtilities.cpp" />
+    <ClCompile Include="..\SockerCode\Cpp11-BlockingQueue.cpp" />
+    <ClCompile Include="..\SockerCode\Logger.cpp" />
+    <ClCompile Include="..\SockerCode\Sockets.cpp" />
+    <ClCompile Include="..\SockerCode\StringUtilities.cpp" />
+    <ClCompile Include="..\SockerCode\WindowsHelpers.cpp" />
     <ClCompile Include="SockerTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

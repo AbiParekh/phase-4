@@ -18,12 +18,48 @@
     <ClInclude Include="..\common\Phase4Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\SockerCode\CodeUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SockerCode\Cpp11-BlockingQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SockerCode\Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SockerCode\Sockets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SockerCode\StringUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SockerCode\WindowsHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\Phase4Messages.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="SockerTest.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SockerCode\CodeUtilities.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SockerCode\Cpp11-BlockingQueue.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SockerCode\Logger.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SockerCode\Sockets.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SockerCode\StringUtilities.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SockerCode\WindowsHelpers.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>

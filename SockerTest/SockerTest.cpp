@@ -1,6 +1,7 @@
 #include "../common/Phase4Messages.h"
 #include "../SockerCode/Sockets.h"
 #include <iostream>
+#include <chrono>       
 #include <map>
 
 void ReportResults(std::map<std::string, bool> outputMap);
@@ -38,13 +39,11 @@ int main()
 	std::pair<std::string, bool> HeartbeatMessage("Test_HeartbeatMessage", Test_HeartbeatMessage());
 	testResults.insert(HeartbeatMessage);
 
-
-	/*
 	// createDirectory Test
 	std::pair<std::string, bool> SocketCreation("Test_SocketCreation", Test_SocketCreation());
-	testResults.insert(createDirectory);
-	*/
+	testResults.insert(SocketCreation);
 
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	ReportResults(testResults);
 
 	return 0;
@@ -609,5 +608,8 @@ bool Test_SocketCreation()
 	{
 		std::cout << "\n  Exception caught:";
 		std::cout << "\n  " << ex.what() << "\n\n";
+		return false;
 	}
+
+	return true;
 }

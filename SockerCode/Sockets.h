@@ -196,6 +196,7 @@ namespace Sockets
         bool testBufferHandling(Socket& socket_);
     };
 
+    void clientTestStringHandling(Socket& si);
 }
 #endif
 
