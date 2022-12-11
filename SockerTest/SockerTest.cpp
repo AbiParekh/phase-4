@@ -1,4 +1,5 @@
 #include "../common/Phase4Messages.h"
+#include "../SockerCode/Sockets.h"
 #include <iostream>
 #include <map>
 
@@ -7,7 +8,11 @@ bool Test_CreateThreadMsg();
 bool Test_MappedFileMessage();
 bool Test_ReducedFileMessage();
 bool Test_JoinThreadMessage();
+bool Test_HeartbeatMessage();
 bool Test_SocketCreation();
+
+using Show = StaticLogger<1>;
+using namespace Sockets;
 
 int main()
 {
@@ -28,6 +33,11 @@ int main()
 	// Reduced File Message Test   
 	std::pair<std::string, bool> ReducedFileMessage("Test_ReducedFileMessage", Test_ReducedFileMessage());
 	testResults.insert(ReducedFileMessage);
+
+	// Heartbeat Test Reduced File Message Test   
+	std::pair<std::string, bool> HeartbeatMessage("Test_HeartbeatMessage", Test_HeartbeatMessage());
+	testResults.insert(HeartbeatMessage);
+
 
 	/*
 	// createDirectory Test
@@ -447,4 +457,157 @@ bool Test_JoinThreadMessage()
 	}
 		
 	return results;
+}
+
+bool Test_HeartbeatMessage()
+{
+	bool results = true;
+	HeartbeatMessage HeartbeatMessage1;
+	HeartbeatMessage HeartbeatMessage2;
+	HeartbeatMessage HeartbeatMessage3;
+	HeartbeatMessage HeartbeatMessage4;
+
+	HeartbeatMessage1.threadName = "THREAD_STUBX_THREADY";
+	HeartbeatMessage1.healthStatus = HEALTH_STATUS::COMPLETE;
+	HeartbeatMessage1.messageType = 5;
+
+	uint32_t bufferSize = 0;
+	char* temp1 = NULL;
+	if (HeartbeatMessage1.createBuffer(bufferSize) != true)
+	{
+		results = false;
+		std::cout << "TEST FAIL: HeartbeatMessage Create Buffer" << std::endl;
+	}
+	else
+	{
+
+		temp1 = HeartbeatMessage1.buffer;
+
+		char placeholder[MAX_MESSAGE_SIZE];
+		std::memcpy(placeholder, temp1, bufferSize);
+		uint32_t bufferSizefromReduce = 0;
+		if (HeartbeatMessage3.reduceBuffer(placeholder, bufferSizefromReduce) != true)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 3 - reduceBuffer " << std::endl;
+		}
+
+		if (HeartbeatMessage3.threadName.compare("THREAD_STUBX_THREADY") != 0)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 3 - outputFolderName" << std::endl;
+		}
+
+		if (HeartbeatMessage3.healthStatus != HEALTH_STATUS::COMPLETE)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 3 - threadType" << std::endl;
+		}
+
+		if (HeartbeatMessage3.messageType != 5)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 3 - messageType" << std::endl;
+		}
+
+		if (bufferSizefromReduce != bufferSize)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 3 - Buffer Size Fail (" << bufferSizefromReduce << ", " << bufferSize << ")" << std::endl;
+		}
+	}
+
+	HeartbeatMessage2.threadName = "RANDOM THREAD NAME YAHHHHH.txt";
+	HeartbeatMessage2.healthStatus = HEALTH_STATUS::INPROGRESS;
+	HeartbeatMessage2.messageType = 5;
+
+	char* temp2;
+	uint32_t  bufferSize2 = 0;
+
+	if (HeartbeatMessage2.createBuffer(bufferSize2) != true)
+	{
+		results = false;
+		std::cout << "TEST FAIL: HeartbeatMessage 2 - Create Buffer" << std::endl;
+	}
+	else
+	{
+		temp2 = HeartbeatMessage2.buffer;
+		char placeholder2[MAX_MESSAGE_SIZE];
+		std::memcpy(placeholder2, temp2, bufferSize2);
+		uint32_t bufferSizefromReduce = 0;
+		if (HeartbeatMessage4.reduceBuffer(placeholder2, bufferSizefromReduce) != true)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 4 - reduceBuffer" << std::endl;
+		}
+
+		if (HeartbeatMessage4.threadName.compare("RANDOM THREAD NAME YAHHHHH.txt") != 0)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 4 - inputFileName (" << HeartbeatMessage4.threadName << ")" << std::endl;
+		}
+
+		if (HeartbeatMessage4.healthStatus != THREAD_TYPE::reduce)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 4 - threadType" << std::endl;
+		}
+
+		if (HeartbeatMessage4.messageType != 5)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 4 - Message Type" << std::endl;
+		}
+
+		if (bufferSizefromReduce != bufferSize2)
+		{
+			results = false;
+			std::cout << "TEST FAIL: HeartbeatMessage 4 - Buffer Size Fail (" << bufferSizefromReduce << ", " << bufferSize << ")" << std::endl;
+		}
+	}
+
+	return results;
+}
+
+bool Test_SocketCreation()
+{
+	Show::attach(&std::cout);
+	Show::start();
+	Show::title("Testing Sockets", '=');
+
+	try
+	{
+		SocketSystem ss;
+		SocketConnecter si;
+		SocketListener sl(9070, Socket::IP4);
+		ClientHandler cp;
+		sl.start(cp);
+
+		while (!si.connect("localhost", 9070))
+		{
+			Show::write("\n  client waiting to connect");
+			::Sleep(100);
+		}
+
+		Show::title("Starting string test on client");
+		clientTestStringHandling(si);
+
+		////////////////////////////////////////////////////
+		// This buffer handling test doesn't work yet.
+		// I'll fix when time permits.
+		//
+		// Show::title("Starting buffer test on client");
+		// clientTestBufferHandling(si);
+
+		si.sendString("TEST_STOP");
+
+		Show::write("\n\n  client calling send shutdown\n");
+		si.shutDownSend();
+		sl.stop();
+	}
+	catch (std::exception& ex)
+	{
+		std::cout << "\n  Exception caught:";
+		std::cout << "\n  " << ex.what() << "\n\n";
+	}
 }

@@ -186,6 +186,16 @@ namespace Sockets
         ListenThread.detach();
         return true;
     }
+
+
+    class ClientHandler
+    {
+    public:
+        void operator()(Socket& socket_);
+        bool testStringHandling(Socket& socket_);
+        bool testBufferHandling(Socket& socket_);
+    };
+
 }
 #endif
 

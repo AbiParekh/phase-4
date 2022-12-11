@@ -530,13 +530,6 @@ void SocketListener::stop()
 // - passed to SocketListener::start(CallObject& co)
 // - Client handling thread starts by calling operator()
 
-class ClientHandler
-{
-public:
-    void operator()(Socket& socket_);
-    bool testStringHandling(Socket& socket_);
-    bool testBufferHandling(Socket& socket_);
-};
 
 //----< Client Handler thread starts running this function >-----------------
 

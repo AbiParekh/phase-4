@@ -3,8 +3,14 @@
 #include <string>
 
 enum THREAD_TYPE { map, reduce };
-const int32_t MAX_MESSAGE_FIELD_SIZE = 512;
-const int32_t MAX_MESSAGE_SIZE = 2048;
+enum HEALTH_STATUS {INIT, INPROGRESS, COMPLETE};
+const int32_t MAX_MESSAGE_FIELD_SIZE	= 512;
+const int32_t MAX_MESSAGE_SIZE			= 2048;
+const int32_t CREATE_THREAD_MESSAGE		= 1;
+const int32_t JOIN_MESSAGE				= 2;
+const int32_t MAP_FILE_MESSAGE			= 3;
+const int32_t REDUCE_FILE_MESSAGE		= 4;
+const int32_t HEARTBEAT_MESSAGE			= 5;
 
 class baseMessage
 {
@@ -20,7 +26,6 @@ public:
 		
 	char* buffer;
 };
-
 
 class CreateThreadMessage : public baseMessage
 {
@@ -85,3 +90,18 @@ public:
 
 };
 
+class HeartbeatMessage : public baseMessage
+{
+public:
+	bool createBuffer(uint32_t& Buffersize);
+
+	bool reduceBuffer(char*, uint32_t& Buffersize);
+
+	uint32_t calculateSize();
+
+	uint32_t messageType;
+	
+	HEALTH_STATUS healthStatus;
+
+	std::string threadName;
+};
