@@ -1,6 +1,6 @@
 Input_Directory ..\textFiles\inputDir\
 Map_DLL_Location .\..\MapDLL\MapLibrary\MapLibrary.dll
 Reduce_DLL_Location .\..\ReduceDLL\ReduceLib\ReduceLib.dll
-Number_Of_Map_Threads 5
-Number_Of_Reduce_Threads 4
+PORT_WORKER_SERVER 9069
+STARTING_PORT_STUB 9070
 Map_Buffer_Size 3000

@@ -22,9 +22,9 @@ public:
 
 	std::string getReduceTempOutputFolder();
 
-	uint32_t getNumberOfMapThreads();
+	uint32_t geControllerPortNumber();
 
-	uint32_t getNumberOfReduceThreads();
+	uint32_t getStubPortNumber();
 
 	uint32_t getMapBufferSize();
 
@@ -32,17 +32,15 @@ public:
 
 	void setOutputDir(std::string);
 	
-	void setfinalOutputDir(std::string);
-
 	void setIntermediateDir(std::string);
 
 	void setMapDllLocation(std::string);
 
 	void setReduceDllLocation(std::string);
 
-	void setNumberOfMapThreads(uint32_t);
+	void setControllerPortNumber(uint32_t);
 
-	void setNumberOfReduceThreads(uint32_t);
+	void setStubPortNumber(uint32_t);
 
 	void setMapBufferSize(uint32_t);
 
@@ -63,8 +61,8 @@ protected:
 	std::string outputDirectory_;
 	std::string mapDllLocation_;
 	std::string reduceDllLocation_;
-	uint32_t numberOfMapThreads_;
-	uint32_t numberOfReduceThreads_;
+	uint32_t ControllerPort_;
+	uint32_t StubPort_;
 	uint32_t mapBufferSize_;
 
 private:

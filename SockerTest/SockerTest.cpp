@@ -11,6 +11,7 @@ bool Test_ReducedFileMessage();
 bool Test_JoinThreadMessage();
 bool Test_HeartbeatMessage();
 bool Test_SocketCreation();
+bool Test_MessageHeader();
 
 using Show = StaticLogger<1>;
 using namespace Sockets;
@@ -39,7 +40,9 @@ int main()
 	std::pair<std::string, bool> HeartbeatMessage("Test_HeartbeatMessage", Test_HeartbeatMessage());
 	testResults.insert(HeartbeatMessage);
 
-	// createDirectory Test
+	std::pair<std::string, bool> MessageHeader("Test_MessageHeader", Test_MessageHeader());
+	testResults.insert(MessageHeader);
+
 	std::pair<std::string, bool> SocketCreation("Test_SocketCreation", Test_SocketCreation());
 	testResults.insert(SocketCreation);
 
@@ -612,4 +615,111 @@ bool Test_SocketCreation()
 	}
 
 	return true;
+}
+
+bool Test_MessageHeader()
+{
+	bool results = true;
+	CreateThreadMessage ThreadMessage1;
+	CreateThreadMessage ThreadMessage2;
+	
+	ThreadMessage1.inputFileName = "Input File Name";
+	ThreadMessage1.outputFolderName = "Ouput\\Folder\\Location";
+	ThreadMessage1.threadType = THREAD_TYPE::map;
+	ThreadMessage1.messageType = 1;
+
+	uint32_t bufferSize = 0;
+	char* temp1 = NULL;
+	if (ThreadMessage1.createBuffer(bufferSize) != true)
+	{
+		results = false;
+		std::cout << "TEST FAIL CreateBufferThreadMessage 1" << std::endl;
+	}
+	else
+	{
+		temp1 = ThreadMessage1.buffer;
+		char placeholder[MAX_MESSAGE_SIZE];
+		std::memcpy(placeholder, temp1, bufferSize);
+		uint32_t bufferSizefromReduce = 0;
+
+		char headerBuffer[24];
+		// Copy Header of the Next Message
+		std::memcpy(headerBuffer, placeholder, 8);
+		/*for (size_t tempCount = 0; tempCount < 24; tempCount)
+		{
+			std::cout << "tempCount placeholder (" << placeholder[tempCount] << "), headerBuffer (" << headerBuffer[tempCount] << ")" << std::endl;
+		}
+		*/
+		uint32_t messageType = 0;
+		uint32_t Buffersize = 0;
+		MessageHeader tempMessageHeader;
+		if (tempMessageHeader.ParseMsgHeader(messageType, Buffersize, headerBuffer) == true)
+		{
+
+			if (messageType != 1)
+			{
+				results = false;
+				std::cout << "TEST FAIL: Test_MessageHeader 1 - messageType" << std::endl;
+			}
+
+			if (bufferSize != Buffersize)
+			{
+				results = false;
+				std::cout << "TEST FAIL: Test_MessageHeader 1 - Buffer Size Fail (" << bufferSize << ", " << Buffersize << ")" << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "TEST FAIL: Test_MessageHeader 1 - Failed to Parse Header Successfully" << std::endl;
+			results = false;
+		}
+	
+	}
+
+	ThreadMessage2.inputFileName = "RANDOM FILE NAME FOR THREAD #2";
+	ThreadMessage2.outputFolderName = "C:\\Users\\steph\\Documents\\OO Design";
+	ThreadMessage2.threadType = THREAD_TYPE::reduce;
+	ThreadMessage2.messageType = 5;
+
+	char* temp2;
+	uint32_t  bufferSize2 = 0;
+
+	if (ThreadMessage2.createBuffer(bufferSize2) != true)
+	{
+		results = false;
+		std::cout << "TEST FAIL: Test_MessageHeader 2 - Create Buffer" << std::endl;
+	}
+	else
+	{
+		temp2 = ThreadMessage2.buffer;
+		char placeholder2[MAX_MESSAGE_SIZE];
+		std::memcpy(placeholder2, temp2, bufferSize2);
+		char headerBuffer[24];
+		// Copy Header of the Next Message
+		std::memcpy(headerBuffer, placeholder2, 8);
+		uint32_t messageType = 0;
+		uint32_t Buffersize = 0;
+		MessageHeader tempMessageHeader;
+		if (tempMessageHeader.ParseMsgHeader(messageType, Buffersize, headerBuffer) == true)
+		{
+			if (messageType != 5)
+			{
+				results = false;
+				std::cout << "TEST FAIL: Test_MessageHeader - Message Type (" << messageType << ")" << std::endl;
+			}
+
+			if (Buffersize != bufferSize2)
+			{
+				results = false;
+				std::cout << "TEST FAIL: Test_MessageHeader - Buffer Size Fail (" << bufferSize2 << ", " << Buffersize << ")" << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "TEST FAIL: Test_MessageHeader 1 - Failed to Parse Header Successfully" << std::endl;
+			results = false;
+		}
+	}
+
+	return results;
 }

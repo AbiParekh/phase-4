@@ -8,8 +8,8 @@ MapReducerConfig::MapReducerConfig() :
 	outputDirectory_(""),
 	mapDllLocation_(""),
 	reduceDllLocation_(""),
-	numberOfMapThreads_(0),
-	numberOfReduceThreads_(0),
+	ControllerPort_(0),
+	StubPort_(0),
 	mapBufferSize_(0){}
 
 bool MapReducerConfig::parseConfigurationFile(std::string locationOfConfigurationFile)
@@ -194,8 +194,8 @@ bool MapReducerConfig::parseConfigurationLine(std::string line)
 	else if(configurationParameter.compare("Reduce_DLL_Location")		== 0) reduceDllLocation_		= configurationValue;
 	else if(configurationParameter.compare("Output_Directory")			== 0) outputDirectory_			= configurationValue;
 	else if(configurationParameter.compare("Temp_Directory")			== 0) intermediateDirectory_	= configurationValue;
-	else if(configurationParameter.compare("Number_Of_Map_Threads")		== 0) numberOfMapThreads_		= std::stoul(configurationValue, nullptr, 0);
-	else if(configurationParameter.compare("Number_Of_Reduce_Threads")	== 0) numberOfReduceThreads_	= std::stoul(configurationValue, nullptr, 0);
+	else if(configurationParameter.compare("PORT_WORKER_SERVER")		== 0) ControllerPort_			= std::stoul(configurationValue, nullptr, 0);
+	else if(configurationParameter.compare("STARTING_PORT_STUB")		== 0) StubPort_					= std::stoul(configurationValue, nullptr, 0);
 	else if (configurationParameter.compare("Map_Buffer_Size")			== 0) mapBufferSize_			= std::stoul(configurationValue, nullptr, 0);
 	else
 	{
@@ -262,14 +262,14 @@ bool MapReducerConfig::requiredConfigurationItemsPresent()
 
 	}
 
-	if (numberOfMapThreads_ == 0)
+	if (ControllerPort_ == 0)
 	{
-		std::cout   << __func__ <<  " ERROR: Map Threads not identified in Configuration File" << std::endl;
+		std::cout   << __func__ <<  " ERROR: Controller Port not identified in Configuration File" << std::endl;
 		results = false;
 	}
-	if (numberOfReduceThreads_ == 0)
+	if (StubPort_ == 0)
 	{
-		std::cout   << __func__ <<  " ERROR: Number of Reduce Threads not identified in Configuration File" << std::endl;
+		std::cout   << __func__ <<  " ERROR: Stub Port not identified in Configuration File" << std::endl;
 		results = false;
 	}
 	if (mapBufferSize_ == 0)
@@ -318,14 +318,14 @@ std::string MapReducerConfig::getReduceTempOutputFolder()
 	return folderNameForReducerOutput;
 }
 
-uint32_t MapReducerConfig::getNumberOfMapThreads()
+uint32_t MapReducerConfig::geControllerPortNumber()
 {
-	return numberOfMapThreads_;
+	return ControllerPort_;
 }
 
-uint32_t MapReducerConfig::getNumberOfReduceThreads()
+uint32_t MapReducerConfig::getStubPortNumber()
 {
-	return numberOfReduceThreads_;
+	return StubPort_;
 }
 
 uint32_t MapReducerConfig::getMapBufferSize()
@@ -357,6 +357,16 @@ void MapReducerConfig::setMapDllLocation(std::string out)
 void MapReducerConfig::setReduceDllLocation(std::string middle)
 {
 	reduceDllLocation_ = middle;
+}
+
+void MapReducerConfig::setControllerPortNumber(uint32_t input)
+{
+	ControllerPort_ = input;
+}
+
+void MapReducerConfig::setStubPortNumber(uint32_t input)
+{
+	StubPort_ = input;
 }
 
 void MapReducerConfig::setNumberOfMapThreads(uint32_t threadNumber)

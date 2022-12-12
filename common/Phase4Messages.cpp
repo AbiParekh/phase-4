@@ -580,3 +580,48 @@ uint32_t HeartbeatMessage::calculateSize()
 	return sizeOfMessage;
 	
 }
+
+bool MessageHeader::ParseMsgHeader(uint32_t& messageType, uint32_t& Buffersize, char* charArray)
+{
+	bool results = true;
+	try
+	{
+		messageType = charArray[3];
+		messageType <<= 8;
+		messageType |= charArray[2];
+		messageType <<= 8;
+		messageType |= charArray[1];
+		messageType <<= 8;
+		messageType |= charArray[0];
+
+		if (messageType > 5)
+		{
+			results = false;
+			std::cout << "ERROR: INVALID MESSAGE TYPE" << std::endl;
+		}
+
+		uint32_t size = 0;
+		size = charArray[7];
+		size <<= 8;
+		size |= charArray[6];
+		size <<= 8;
+		size |= charArray[5];
+		size <<= 8;
+		size |= charArray[4];
+
+		if (size > MAX_MESSAGE_SIZE)
+		{
+			results = false;
+
+			std::cout << "ERROR: INVALID MESSAGE Size" << std::endl;
+		}
+
+		Buffersize = size;
+	}
+	catch (...)
+	{
+		std::cout << "ERROR: Expection during message header processing" << std::endl;
+		results = false;
+	}
+	return results;
+}

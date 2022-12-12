@@ -149,6 +149,7 @@ namespace Sockets
             return false;
         }
         // listen on a dedicated thread so server's main thread won't block
+        std::cout << "Completed Bind and Listen" << std::endl;
 
         std::thread ListenThread(
             [&]()
@@ -161,6 +162,7 @@ namespace Sockets
                         break;
 
                     // Accept a client socket - blocking call
+                    std::cout << "before accept call" << std::endl;
 
                     Socket clientSocket = accept();    // uses move ctor
                     if (!clientSocket.validState()) {
@@ -172,10 +174,12 @@ namespace Sockets
 
                     // pass co by value to avoid interactions between threads
 
+                    std::cout << "before starting the thread" << std::endl;
+
                     std::thread clientThread(co, std::ref(clientSocket));
-                    clientThread.get_id();
+                    std::thread::id tempThreadId  = clientThread.get_id();
                     std::ostringstream conv;
-                    conv << clientThread.get_id();
+                    conv << tempThreadId;
                     std::string sid = ", thread id = " + conv.str();
                     std::cout << "\n  created ClientHandler Thread " + sid;
                     clientThread.detach();  // detach - listener won't access thread again
@@ -183,6 +187,8 @@ namespace Sockets
                 StaticLogger<1>::write("\n  -- Listen thread stopping");
             }
         );
+
+        std::cout << "ATTEMPTING TO DETATCH LISTEN THREAD" << std::endl;
         ListenThread.detach();
         return true;
     }
