@@ -11,7 +11,7 @@ public:
 	std::string getInputDir();
 
 	std::string getOutputDir();
-	
+
 	std::string getIntermediateDir();
 
 	std::string getMapDllLocation();
@@ -22,29 +22,27 @@ public:
 
 	std::string getReduceTempOutputFolder();
 
-	uint32_t geControllerPortNumber();
+	uint32_t getNumberOfMapThreads();
 
-	uint32_t getStubPortNumber();
-
-	uint32_t getNumberOfStubs();
+	uint32_t getNumberOfReduceThreads();
 
 	uint32_t getMapBufferSize();
 
 	void setInputDir(std::string);
 
 	void setOutputDir(std::string);
-	
+
+	void setfinalOutputDir(std::string);
+
 	void setIntermediateDir(std::string);
 
 	void setMapDllLocation(std::string);
 
 	void setReduceDllLocation(std::string);
 
-	void setControllerPortNumber(uint32_t);
+	void setNumberOfMapThreads(uint32_t);
 
-	void setStubPortNumber(uint32_t);
-	
-	void setNumberOfStubs(uint32_t);
+	void setNumberOfReduceThreads(uint32_t);
 
 	void setMapBufferSize(uint32_t);
 
@@ -65,9 +63,8 @@ protected:
 	std::string outputDirectory_;
 	std::string mapDllLocation_;
 	std::string reduceDllLocation_;
-	uint32_t ControllerPort_;
-	uint32_t StubPort_;
-	uint32_t NumberOfStubs_;
+	uint32_t numberOfMapThreads_;
+	uint32_t numberOfReduceThreads_;
 	uint32_t mapBufferSize_;
 
 private:
@@ -76,7 +73,7 @@ private:
 	const std::string folderNameForMapOutput = "MapOutput";
 
 	const std::string folderNameForReducerOutput = "ReducerOutput";
-	
+
 	const std::string folderNameforFinalMergedOutput = "FinalizedOutput";
 
 };

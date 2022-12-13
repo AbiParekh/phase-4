@@ -218,7 +218,7 @@ std::string Socket::recvString(byte terminator)
         iResult = ::recv(socket_, buffer, buflen, 0);
         if (iResult == 0 || iResult == INVALID_SOCKET)
         {
-            //StaticLogger<1>::write("\n  -- invalid socket in Socket::recvString");
+            StaticLogger<1>::write("\n  -- invalid socket in Socket::recvString");
             break;
         }
         if (buffer[0] == terminator)
@@ -531,6 +531,14 @@ void SocketListener::stop()
 // - Client handling thread starts by calling operator()
 
 
+class ClientHandler
+{
+public:
+    void operator()(Socket& socket_);
+    bool testStringHandling(Socket& socket_);
+    bool testBufferHandling(Socket& socket_);
+};
+
 //----< Client Handler thread starts running this function >-----------------
 
 void clearBuffer(Socket::byte* buffer, size_t BufLen)
@@ -683,7 +691,7 @@ bool ClientHandler::testBufferHandling(Socket& socket_)
 void Sockets::clientTestStringHandling(Socket& si)
 {
     std::string command = "TEST_STRING_HANDLING";
-    si.sendString(command);
+    si.sendString(command, '\0');
     Show::write("\n  client sent : " + command);
 
     for (size_t i = 0; i < 5; ++i)
@@ -776,56 +784,3 @@ void clientTestBufferHandling(Socket& si)
         }
     }
 }
-
-
-/*
-//----< demonstration >------------------------------------------------------
-#ifdef FALSE
-
-
-int main(int argc, char* argv[])
-{
-    Show::attach(&std::cout);
-    Show::start();
-    Show::title("Testing Sockets", '=');
-
-    try
-    {
-        SocketSystem ss;
-        SocketConnecter si;
-        SocketListener sl(9070, Socket::IP4);
-        ClientHandler cp;
-        sl.start(cp);
-
-        while (!si.connect("localhost", 9070))
-        {
-            Show::write("\n  client waiting to connect");
-            ::Sleep(100);
-        }
-
-        Show::title("Starting string test on client");
-        clientTestStringHandling(si);
-
-        ////////////////////////////////////////////////////
-        // This buffer handling test doesn't work yet.
-        // I'll fix when time permits.
-        //
-        // Show::title("Starting buffer test on client");
-        // clientTestBufferHandling(si);
-
-        si.sendString("TEST_STOP");
-
-        Show::write("\n\n  client calling send shutdown\n");
-        si.shutDownSend();
-        sl.stop();
-    }
-    catch (std::exception& ex)
-    {
-        std::cout << "\n  Exception caught:";
-        std::cout << "\n  " << ex.what() << "\n\n";
-    }
-}
-#endif // FALSE
-*/
-
-

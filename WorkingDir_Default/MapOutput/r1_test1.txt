@@ -1,0 +1,8 @@
+("i",1)
+("all",1)
+("is",1)
+("a",1)
+("12345",1)
+("ellipse",1)
+("underscore",1)
+("apostrophy's",1)

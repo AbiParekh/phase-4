@@ -1,13 +1,84 @@
 #include "MapReduceStub.h"
-#include "../common/Phase4Messages.h"
+#include "../SockerCode/Sockets.h"
+//#include "../common/Phase4Messages.h"
+
+
+static class ClientHandler
+{
+public:
+    void operator()(Sockets::Socket& socket_);
+    bool testStringHandling(Sockets::Socket& socket_);
+    bool testBufferHandling(Sockets::Socket& socket_);
+};
 
 using Show = StaticLogger<1>;
-int main()
+
+
+
+/// Convert Char* Arguments to Strings within a Vector 
+
+void convertArgsToStrings(int numberOfArguments, char* argumentArray[], std::vector<std::string>& argumentVector)
 {
-    MapReduceStub mrStub(9070, 1);
-    mrStub.startServer();
+    for (int i = 0; i < numberOfArguments; ++i)
+    {
+        argumentVector.push_back(std::string(argumentArray[i]));
+    }
+}
+
+int main(int argc, char* argv[])
+{
+
+    std::vector<std::string> argumentVector;
+    convertArgsToStrings(argc, argv, argumentVector);
+
+    std::vector<std::string>::iterator argVecIT = find(argumentVector.begin(), argumentVector.end(), "-help");
+    if (argVecIT != argumentVector.end())
+    {
+        std::cin.get();
+        return -1;
+    }
+    else if (argumentVector.size() != 2)
+    {
+        //printHelp();
+        std::cin.get();
+        return -1;
+    }
+
+;
+
+    Show::attach(&std::cout);
+    Show::start();
+    Show::title("Testing Sockets", '=');
+    Sockets::SocketConnecter si;
+    stubHandler sh;
+    ClientHandler ch;
+    MapReduceStub mrStub(9071, 1);
+    std::string configFile = argumentVector.at(1);
+
+   // Sockets::Socket clientSocket = accept(0, NULL, NULL);
+    // std::thread clientThread(ch, std::move(std::ref(clientSocket)));
+  
+    mrStub.startProcessor(ch, si, "test", argumentVector.at(1));
+    mrStub.startProcessor(ch, si, "map", std::ref(configFile));
+    mrStub.startProcessor(ch, si, "stop", argumentVector.at(1));
+
+
+
+
+ //   mrStub.stopServer()
+/*
+* s
+    while (!si.connect("localhost", 9071))
+    {
+        std::cout<< "\ client waiting to connect" << std::endl;
+        ::Sleep(1000);
+    }*/
+
+
     return 0;
 }
+
+/*
 bool MapReduceStub::startServer()
 {
 	Sockets::SocketSystem ss;
@@ -15,6 +86,7 @@ bool MapReduceStub::startServer()
     Sockets::SocketListener sl(port, Sockets::Socket::IP4);
 
     stubHandler SH;
+
 	sl.start(SH);
     std::cout << "Post SL Start" << std::endl;
 
@@ -23,10 +95,14 @@ bool MapReduceStub::startServer()
     std::cout << "Post SL Stop" << std::endl;
 
 	return true;
-}
+}*/
 
 void stubHandler::operator()(Sockets::Socket& socket_)
 {
+
+    std::string command = Sockets::Socket::removeTerminator(socket_.recvString());
+    Show::write("\n  server rcvd command: " + command);
+
     char* Sockerbuffer = new char[MAX_MESSAGE_SIZE * 10]; // Should never have more then 10 messages 
 
     while (true)

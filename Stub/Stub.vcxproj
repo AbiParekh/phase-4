@@ -104,6 +104,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\esevi\source\repos\AbiParekh\phase-4\SockerTest;C:\Users\esevi\source\repos\AbiParekh\phase-4\MapReduceWF;C:\Users\esevi\source\repos\AbiParekh\phase-4\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\FileIO.h" />
+    <ClInclude Include="..\common\MapInterface.h" />
     <ClInclude Include="..\common\Phase4Messages.h" />
+    <ClInclude Include="..\common\ReduceInterface.h" />
+    <ClInclude Include="..\MapReduceWF\FinalMerge.h" />
+    <ClInclude Include="..\MapReduceWF\MapReducerConfig.h" />
+    <ClInclude Include="..\MapReduceWF\MapReduceWF.h" />
     <ClInclude Include="..\SockerCode\CodeUtilities.h" />
     <ClInclude Include="..\SockerCode\Cpp11-BlockingQueue.h" />
     <ClInclude Include="..\SockerCode\Logger.h" />
@@ -137,7 +145,11 @@
     <ClInclude Include="MapReduceStub.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\FileIO.cpp" />
     <ClCompile Include="..\common\Phase4Messages.cpp" />
+    <ClCompile Include="..\MapReduceWF\FinalMerge.cpp" />
+    <ClCompile Include="..\MapReduceWF\MapReducerConfig.cpp" />
+    <ClCompile Include="..\MapReduceWF\MapReduceWF.cpp" />
     <ClCompile Include="..\SockerCode\CodeUtilities.cpp" />
     <ClCompile Include="..\SockerCode\Cpp11-BlockingQueue.cpp" />
     <ClCompile Include="..\SockerCode\Logger.cpp" />

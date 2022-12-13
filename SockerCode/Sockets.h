@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 #include <atomic>
-
+#include <MapReduceWF.h>
 #include "StringUtilities.h"
 #include "WindowsHelpers.h"
 #include "Logger.h"
@@ -118,7 +118,7 @@ namespace Sockets
         virtual ~SocketListener();
 
         template<typename CallObj>
-        bool start(CallObj& co);
+        bool start(CallObj& co, std::string param);
         void stop();
     private:
         bool bind();
@@ -137,8 +137,9 @@ namespace Sockets
     *    used in the test stub below
     */
     template<typename CallObj>
-    bool SocketListener::start(CallObj& co)
+    bool SocketListener::start(CallObj& co, std::string param)
     {
+
         if (!bind())
         {
             return false;
@@ -151,8 +152,16 @@ namespace Sockets
         // listen on a dedicated thread so server's main thread won't block
         std::cout << "Completed Bind and Listen" << std::endl;
 
+        std::string outputFileName = "";
+        MapReducer mapReducer(param);
+        if (param != "test" || param != "stop")
+        {
+            mapReducer.reduce(std::ref(outputFileName));
+        }
+       // mapReducer.reduce(std::ref(outputFileName));
+        //std::thread mapThread(&MapThreadFunction, mapDLLLocation, inputMapDirectory, outputMapDirectory, fileList, bufferSize, threadID, totalReduceThreads);
         std::thread ListenThread(
-            [&]()
+            [&, param, co]()
             {
                 StaticLogger<1>::write("\n  -- server waiting for connection");
 
@@ -162,45 +171,34 @@ namespace Sockets
                         break;
 
                     // Accept a client socket - blocking call
-                    std::cout << "before accept call" << std::endl;
-
                     Socket clientSocket = accept();    // uses move ctor
                     if (!clientSocket.validState()) {
                         continue;
                     }
-                    //StaticLogger<1>::write("\n  -- server accepted connection");
+                    StaticLogger<1>::write("\n  -- server accepted connection");
 
                     // start thread to handle client request
 
                     // pass co by value to avoid interactions between threads
 
-                    std::cout << "before starting the thread" << std::endl;
-
-                    std::thread clientThread(co, std::ref(clientSocket));
+                    std::thread clientThread(co, std::move(std::ref(clientSocket)));
                     std::thread::id tempThreadId  = clientThread.get_id();
                     std::ostringstream conv;
                     conv << tempThreadId;
                     std::string sid = ", thread id = " + conv.str();
                     std::cout << "\n  created ClientHandler Thread " + sid;
-                    clientThread.detach();  // detach - listener won't access thread again
+                    clientThread.join();  // detach - listener won't access thread again
                 }
                 StaticLogger<1>::write("\n  -- Listen thread stopping");
             }
         );
-
+        ::Sleep(1500);
         std::cout << "ATTEMPTING TO DETATCH LISTEN THREAD" << std::endl;
         ListenThread.detach();
         return true;
     }
 
 
-    class ClientHandler
-    {
-    public:
-        void operator()(Socket& socket_);
-        bool testStringHandling(Socket& socket_);
-        bool testBufferHandling(Socket& socket_);
-    };
 
     void clientTestStringHandling(Socket& si);
 }

@@ -39,6 +39,24 @@
     <ClInclude Include="..\common\Phase4Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\MapReduceWF\MapReduceWF.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MapReduceWF\MapReducerConfig.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\FileIO.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\MapInterface.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\ReduceInterface.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MapReduceWF\FinalMerge.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MapReduceStub.cpp">
@@ -64,6 +82,18 @@
     </ClCompile>
     <ClCompile Include="..\common\Phase4Messages.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MapReduceWF\MapReduceWF.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MapReduceWF\MapReducerConfig.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\FileIO.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MapReduceWF\FinalMerge.cpp">
+      <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

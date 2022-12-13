@@ -6,11 +6,10 @@
 #include <condition_variable>
 #include <mutex>
 #include <iostream>
-#include <Windows.h>
 
 #include "MapReduceWF.h"
-#include "../common/Phase4Messages.h"
-#include "../SockerCode/Sockets.h"
+#include <Windows.h>
+
 
 
 // PUBLIC METHODS
@@ -29,7 +28,7 @@ bool MapReducer::reduce(std::string& outputFileName)
 the file content into a vector named lines, calling the map function, it takes each line processes it by removing an punctuation and emits a value 1 for each key.
 after it completes it flushes and empties the cache. */
 bool MapReducer::doReduce(std::string& outputFileName)
-{	
+{
 	if (mapReduceConfig.parseConfigurationFile(configurationFileLocation_))
 	{
 		std::shared_ptr<MapInterface> mapIF = nullptr;
@@ -39,62 +38,24 @@ bool MapReducer::doReduce(std::string& outputFileName)
 		std::string outputReduceDirectory = mapReduceConfig.getIntermediateDir() + "\\" + mapReduceConfig.getReduceTempOutputFolder();
 		std::string mapDLLLocation = mapReduceConfig.getMapDllLocation();
 		std::string reduceDLLLocation = mapReduceConfig.getReduceDllLocation();
-		uint32_t controllerPort = mapReduceConfig.geControllerPortNumber();
-		uint32_t startingStubPortNumber = mapReduceConfig.getStubPortNumber();
-		uint32_t TotalNumberOfStubs = mapReduceConfig.getNumberOfStubs();
 		finalizer.setParameters(outputReduceDirectory, mapReduceConfig.getOutputDir());
 
-		Sockets::SocketSystem ss;
-		Sockets::SocketListener sl(controllerPort, Sockets::Socket::IP4);
-		WFHandler WH;
-		sl.start(WH);
 
-		std::this_thread::sleep_for(std::chrono::seconds(3));
-		
-		Sockets::SocketConnecter si;
-		while (!si.connect("localhost", startingStubPortNumber))
-		{
-			::Sleep(100);
-		}
-
-		fileManager.getListOfTextFiles(mapReduceConfig.getInputDir(), fileList);
-		for (uint32_t count = 0; count < fileList.size(); count++)
-		{
-			// Emmanuell 
-			CreateThreadMessage messageToSend;
-			messageToSend.outputFolderName = outputMapDirectory;
-			messageToSend.inputFileName = fileList.at(count);
-			uint32_t bufferSize  = 0;
-			messageToSend.createBuffer(bufferSize);
-			si.send(bufferSize, messageToSend.buffer);
-			::Sleep(50);
-			
-		}
-
-		si.shutDownSend();
-
-		/*
 		if (!MapStepDLL(mapDLLLocation, inputMapDirectory, outputMapDirectory))
 		{
 			std::cout << __func__ << " ERROR" << std::endl;
 			return false;
 		}
-		else if(!ReduceStepDLL(reduceDLLLocation, outputMapDirectory, outputReduceDirectory, outputFileName))
+		else if (!ReduceStepDLL(reduceDLLLocation, outputMapDirectory, outputReduceDirectory, outputFileName))
 		{
-			std::cout << __func__ <<  " ERROR: Unable to Reduce Mapped Files Output" << std::endl;
+			std::cout << __func__ << " ERROR: Unable to Reduce Mapped Files Output" << std::endl;
 			return false;
 		}
-		else if(!finalizer.mergeFromReduce(outputFileName))
+		else if (!finalizer.mergeFromReduce(outputFileName))
 		{
 			std::cout << __func__ << " ERROR: Unable to Merge all Reduced Values" << std::endl;
 			return false;
 		}
-		*/
-
-
-		sl.stop();
-		std::cout << "Post SL Stop" << std::endl;
-
 	}
 	else
 	{
@@ -114,17 +75,15 @@ bool MapReducer::MapStepDLL(std::string& dllLocation, const std::string& inputMa
 	//static std::queue<int> q;
 
 	bool results = true;
-		
+
 	// For the input Directory read the list of files 
 	fileManager.getListOfTextFiles(mapReduceConfig.getInputDir(), CompletefileList);
 	//uint32_t totalMapThreads = mapReduceConfig.getNumberOfMapThreads();
-	//uint32_t totalReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
-	
-	uint32_t totalMapThreads = 0;
-	uint32_t totalReduceThreads = 0;
+	uint32_t totalMapThreads = mapReduceConfig.getNumberOfMapThreads();
+	uint32_t totalReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
 	uint32_t bufferSize = mapReduceConfig.getMapBufferSize();
 
-		
+
 	// setup fileListVector
 	for (size_t count = 0; count < totalMapThreads; count++)
 	{
@@ -147,7 +106,7 @@ bool MapReducer::MapStepDLL(std::string& dllLocation, const std::string& inputMa
 	// Launch Map Threads
 	for (uint32_t Mthreads = 0; Mthreads < totalMapThreads; Mthreads++)
 	{
-		std::cout   << __func__ <<  "INFO: Launching Map Thread #" << Mthreads << std::endl;
+		std::cout << __func__ << "INFO: Launching Map Thread #" << Mthreads << std::endl;
 		std::string threadID = "m" + std::to_string(Mthreads);
 		std::vector<std::string> fileList = fileListVector.at(Mthreads);
 
@@ -190,8 +149,7 @@ bool MapReducer::ReduceStepDLL(const std::string& dllLocaiton, const std::string
 {
 	bool result = true;
 	std::vector<std::vector<std::string>> fileListVector;
-	//uint32_t numberOfReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
-	uint32_t numberOfReduceThreads = 0; 
+	uint32_t numberOfReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
 	// Get File List for Reducer Threads
 	for (uint32_t Rthreads = 0; Rthreads < numberOfReduceThreads; Rthreads++)
 	{
@@ -204,7 +162,7 @@ bool MapReducer::ReduceStepDLL(const std::string& dllLocaiton, const std::string
 	// Launch Reducer Threads
 	for (uint32_t Rthreads = 0; Rthreads < numberOfReduceThreads; Rthreads++)
 	{
-		std::cout   << __func__ <<  "INFO: Launching Reducer Thread #" << Rthreads << std::endl;
+		std::cout << __func__ << "INFO: Launching Reducer Thread #" << Rthreads << std::endl;
 		std::string threadID = "r" + std::to_string(Rthreads);
 		std::vector<std::string> fileList = fileListVector.at(Rthreads);
 		std::thread reduceThread(&ReduceThreadFunction, dllLocaiton, outputReduceDirectory, fileListVector.at(Rthreads), threadID, outputMapDirectory);
@@ -214,7 +172,7 @@ bool MapReducer::ReduceStepDLL(const std::string& dllLocaiton, const std::string
 
 	for (uint32_t Rthreads = 0; Rthreads < numberOfReduceThreads; Rthreads++)
 	{
-		std::cout   << __func__ <<  "INFO: Attempting to Join Reducer Thread " << Rthreads << std::endl;
+		std::cout << __func__ << "INFO: Attempting to Join Reducer Thread " << Rthreads << std::endl;
 
 		if (reduceThreadList.at(Rthreads).joinable() == true)
 		{
@@ -239,14 +197,14 @@ void MapThreadFunction(std::string dllLocation, std::string inputDirectory, std:
 		CreateMap = (pvFunctv)(GetProcAddress(hdllMap, "CreateMapClassInstance"));
 		if (CreateMap == nullptr)
 		{
-			std::cout   << __func__ <<  "Error: Did not load CreateMapClassInstance correctly." << std::endl;
+			std::cout << __func__ << "Error: Did not load CreateMapClassInstance correctly." << std::endl;
 		}
 		else
 		{
 			mapIF = (static_cast<MapInterface*> (CreateMap()));	// get pointer to object
 			if (mapIF == nullptr)
 			{
-				std::cout   << __func__ <<  "Error: Map Interface Not implemented correctly " << std::endl;
+				std::cout << __func__ << "Error: Map Interface Not implemented correctly " << std::endl;
 			}
 			else
 			{
@@ -277,12 +235,12 @@ void MapThreadFunction(std::string dllLocation, std::string inputDirectory, std:
 	}
 	else
 	{
-		std::cout   << __func__ <<  "Error: Map Library load failed!" << std::endl;
+		std::cout << __func__ << "Error: Map Library load failed!" << std::endl;
 	}
 }
 
 
-void ReduceThreadFunction(std::string ReduceDllLocation, std::string outputReduceDirectory, std::vector<std::string> fileList, std::string threadID, std::string MapFilesDirectory) 
+void ReduceThreadFunction(std::string ReduceDllLocation, std::string outputReduceDirectory, std::vector<std::string> fileList, std::string threadID, std::string MapFilesDirectory)
 {
 	HINSTANCE hdllReduce = NULL;
 	pvFunctv CreateReduce;
@@ -306,22 +264,17 @@ void ReduceThreadFunction(std::string ReduceDllLocation, std::string outputReduc
 			}
 			else
 			{
-				std::cout   << __func__ <<  "Error: Could not create ReduceInterface Class." << std::endl;
+				std::cout << __func__ << "Error: Could not create ReduceInterface Class." << std::endl;
 			}
 		}
 		else
 		{
-			std::cout   << __func__ <<  "Error: Could not create ReduceInterface Class." << std::endl;
+			std::cout << __func__ << "Error: Could not create ReduceInterface Class." << std::endl;
 		}
 
 	}
 	else
 	{
-		std::cout   << __func__ <<  "Error: Reduce Library load failed!" << std::endl;
+		std::cout << __func__ << "Error: Reduce Library load failed!" << std::endl;
 	}
-}
-
-void WFHandler::operator()(Sockets::Socket& socket_)
-{
-	return;
 }

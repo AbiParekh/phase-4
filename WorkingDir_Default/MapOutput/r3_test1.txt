@@ -1,0 +1,7 @@
+("was",1)
+("caps",1)
+("simple",1)
+("str",1)
+("with",1)
+("comma",1)
+("space",1)

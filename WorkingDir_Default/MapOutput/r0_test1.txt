@@ -1,0 +1,7 @@
+("hi",1)
+("this",1)
+("punctuation",1)
+("thr0ughout",1)
+("tab",1)
+("t",1)
+("hyphon",1)

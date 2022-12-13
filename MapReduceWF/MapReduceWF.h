@@ -54,16 +54,10 @@ private:
 	std::string configurationFileLocation_;
 
 	MapReducerConfig mapReduceConfig;
-	
+
 	FileIOManagement fileManager;
 
 	Final finalizer;
 
 };
 
-
-class WFHandler
-{
-public:
-	void operator()(Sockets::Socket& socket_);
-};
