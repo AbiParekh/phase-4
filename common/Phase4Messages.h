@@ -46,6 +46,8 @@ public:
 	std::string inputFileName;
 
 	std::string outputFolderName;
+
+	std::string inputFolderName;
 };
 
 class JoinThreadsMessage : public baseMessage

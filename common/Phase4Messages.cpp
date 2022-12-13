@@ -66,6 +66,22 @@ bool CreateThreadMessage::createBuffer(uint32_t& Buffersize)
 		buffer[BufferCounter] = '\0';
 		BufferCounter++;
 
+		size_t inputFolderStringSize = inputFolderName.length();
+		if (inputFolderStringSize > 512)
+		{
+			std::cout << "ERROR: Output Folder String Size larger then 512 Characters" << std::endl;
+			return false;
+		}
+
+		for (uint32_t i = 0; i < inputFolderStringSize; i++)
+		{
+			buffer[BufferCounter] = inputFolderName.at(i);
+			BufferCounter++;
+		}
+
+		buffer[BufferCounter] = '\0';
+		BufferCounter++;
+
 		if (BufferCounter != Buffersize)
 		{
 			std::cout << "ERROR: Calculated Size is not equal to Actual Buffer Size" << std::endl;
@@ -135,6 +151,22 @@ bool CreateThreadMessage::reduceBuffer(char* Inputbuffer, uint32_t& Buffersize)
 		while (Inputbuffer[BufferCounter] != NULL)
 		{
 			outputFolderName.push_back(Inputbuffer[BufferCounter]);
+			BufferCounter++;
+			fieldSize++;
+			if (fieldSize > MAX_MESSAGE_FIELD_SIZE)
+			{
+				std::cout << "ERROR: Unable to find the end of the Input File Name" << std::endl;
+				return false;
+				break;
+			}
+		}
+
+		BufferCounter++;
+
+		fieldSize = 0;
+		while (Inputbuffer[BufferCounter] != NULL)
+		{
+			inputFolderName.push_back(Inputbuffer[BufferCounter]);
 			BufferCounter++;
 			fieldSize++;
 			if (fieldSize > MAX_MESSAGE_FIELD_SIZE)

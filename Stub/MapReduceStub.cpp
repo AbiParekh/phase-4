@@ -77,13 +77,20 @@ void stubHandler::operator()(Sockets::Socket& socket_)
                         {
                             Show::write("INFO: RECEIVED MESSAGE TO CREATE THREAD!");
                             std::cout << " INFO: RECEIVED MESSAGE TO CREATE THREAD!" << threadMessage.threadType << " Filename " << threadMessage.inputFileName << std::endl;
-                            /// CREATE THREAD CALL
+                            if (threadMessage.threadType == THREAD_TYPE::map)
+                            {
+                                // call create thread with Map
+                            }
+                            else
+                            {
+                                // Call Reduce Thread
+                            }
                         }
-                    }
-                    else
-                    {
-                        Show::write("ERROR: Invalid Message Type for this Port");
-                        break;
+                        else
+                        {
+                            Show::write("ERROR: Invalid Message Type for this Port");
+                            break;
+                        }
                     }
                 }
             }

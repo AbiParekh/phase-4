@@ -60,15 +60,16 @@ bool MapReducer::doReduce(std::string& outputFileName)
 		fileManager.getListOfTextFiles(mapReduceConfig.getInputDir(), fileList);
 		for (uint32_t count = 0; count < fileList.size(); count++)
 		{
+			// Emmanuell 
 			CreateThreadMessage messageToSend;
 			messageToSend.outputFolderName = outputMapDirectory;
-			messageToSend.inputFileName = fileList.in
-			size_t Socket::sendStream(size_t bytes, byte * pBuf)
-			{
-				return ::send(socket_, pBuf, bytes, 0);
-			}
+			messageToSend.inputFileName = fileList.at(count);
+			uint32_t bufferSize  = 0;
+			messageToSend.createBuffer(bufferSize);
+			si.send(bufferSize, messageToSend.buffer);
+			::Sleep(50);
+			
 		}
-
 
 		si.shutDownSend();
 
