@@ -328,6 +328,11 @@ uint32_t MapReducerConfig::getStubPortNumber()
 	return StubPort_;
 }
 
+uint32_t MapReducerConfig::getNumberOfStubs()
+{
+	return NumberOfStubs_;
+}
+
 uint32_t MapReducerConfig::getMapBufferSize()
 {
 	return mapBufferSize_;
@@ -369,14 +374,9 @@ void MapReducerConfig::setStubPortNumber(uint32_t input)
 	StubPort_ = input;
 }
 
-void MapReducerConfig::setNumberOfMapThreads(uint32_t threadNumber)
+void MapReducerConfig::setNumberOfStubs(uint32_t input)
 {
-	numberOfMapThreads_ = threadNumber;
-}
-
-void MapReducerConfig::setNumberOfReduceThreads(uint32_t threadNumber)
-{
-	numberOfReduceThreads_ = threadNumber;
+	NumberOfStubs_ = input;
 }
 
 void MapReducerConfig::setMapBufferSize(uint32_t bufferSize)

@@ -61,3 +61,9 @@ private:
 
 };
 
+
+class WFHandler
+{
+public:
+	void operator()(Sockets::Socket& socket_);
+};

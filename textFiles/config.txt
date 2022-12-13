@@ -3,4 +3,5 @@ Map_DLL_Location .\..\MapDLL\MapLibrary\MapLibrary.dll
 Reduce_DLL_Location .\..\ReduceDLL\ReduceLib\ReduceLib.dll
 PORT_WORKER_SERVER 9069
 STARTING_PORT_STUB 9070
+NUMBER_OF_STUBS 1
 Map_Buffer_Size 3000

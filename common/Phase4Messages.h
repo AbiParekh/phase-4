@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <iostream>
 
 enum THREAD_TYPE { map, reduce };
 enum HEALTH_STATUS {INIT, INPROGRESS, COMPLETE};
@@ -104,4 +105,10 @@ public:
 	HEALTH_STATUS healthStatus;
 
 	std::string threadName;
+};
+
+class MessageHeader
+{
+public:
+	bool ParseMsgHeader(uint32_t& messageType, uint32_t& Buffersize, char* charArray);
 };

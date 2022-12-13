@@ -6,10 +6,11 @@
 #include <condition_variable>
 #include <mutex>
 #include <iostream>
-
-#include "MapReduceWF.h"
 #include <Windows.h>
 
+#include "MapReduceWF.h"
+#include "../common/Phase4Messages.h"
+#include "../SockerCode/Sockets.h"
 
 
 // PUBLIC METHODS
@@ -38,9 +39,40 @@ bool MapReducer::doReduce(std::string& outputFileName)
 		std::string outputReduceDirectory = mapReduceConfig.getIntermediateDir() + "\\" + mapReduceConfig.getReduceTempOutputFolder();
 		std::string mapDLLLocation = mapReduceConfig.getMapDllLocation();
 		std::string reduceDLLLocation = mapReduceConfig.getReduceDllLocation();
+		uint32_t controllerPort = mapReduceConfig.geControllerPortNumber();
+		uint32_t startingStubPortNumber = mapReduceConfig.getStubPortNumber();
+		uint32_t TotalNumberOfStubs = mapReduceConfig.getNumberOfStubs();
 		finalizer.setParameters(outputReduceDirectory, mapReduceConfig.getOutputDir());
 
+		Sockets::SocketSystem ss;
+		Sockets::SocketListener sl(controllerPort, Sockets::Socket::IP4);
+		WFHandler WH;
+		sl.start(WH);
 
+		std::this_thread::sleep_for(std::chrono::seconds(3));
+		
+		Sockets::SocketConnecter si;
+		while (!si.connect("localhost", startingStubPortNumber))
+		{
+			::Sleep(100);
+		}
+
+		fileManager.getListOfTextFiles(mapReduceConfig.getInputDir(), fileList);
+		for (uint32_t count = 0; count < fileList.size(); count++)
+		{
+			CreateThreadMessage messageToSend;
+			messageToSend.outputFolderName = outputMapDirectory;
+			messageToSend.inputFileName = fileList.in
+			size_t Socket::sendStream(size_t bytes, byte * pBuf)
+			{
+				return ::send(socket_, pBuf, bytes, 0);
+			}
+		}
+
+
+		si.shutDownSend();
+
+		/*
 		if (!MapStepDLL(mapDLLLocation, inputMapDirectory, outputMapDirectory))
 		{
 			std::cout << __func__ << " ERROR" << std::endl;
@@ -56,6 +88,12 @@ bool MapReducer::doReduce(std::string& outputFileName)
 			std::cout << __func__ << " ERROR: Unable to Merge all Reduced Values" << std::endl;
 			return false;
 		}
+		*/
+
+
+		sl.stop();
+		std::cout << "Post SL Stop" << std::endl;
+
 	}
 	else
 	{
@@ -79,8 +117,10 @@ bool MapReducer::MapStepDLL(std::string& dllLocation, const std::string& inputMa
 	// For the input Directory read the list of files 
 	fileManager.getListOfTextFiles(mapReduceConfig.getInputDir(), CompletefileList);
 	//uint32_t totalMapThreads = mapReduceConfig.getNumberOfMapThreads();
-	uint32_t totalMapThreads = mapReduceConfig.getNumberOfMapThreads();
-	uint32_t totalReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
+	//uint32_t totalReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
+	
+	uint32_t totalMapThreads = 0;
+	uint32_t totalReduceThreads = 0;
 	uint32_t bufferSize = mapReduceConfig.getMapBufferSize();
 
 		
@@ -149,7 +189,8 @@ bool MapReducer::ReduceStepDLL(const std::string& dllLocaiton, const std::string
 {
 	bool result = true;
 	std::vector<std::vector<std::string>> fileListVector;
-	uint32_t numberOfReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
+	//uint32_t numberOfReduceThreads = mapReduceConfig.getNumberOfReduceThreads();
+	uint32_t numberOfReduceThreads = 0; 
 	// Get File List for Reducer Threads
 	for (uint32_t Rthreads = 0; Rthreads < numberOfReduceThreads; Rthreads++)
 	{
@@ -277,4 +318,9 @@ void ReduceThreadFunction(std::string ReduceDllLocation, std::string outputReduc
 	{
 		std::cout   << __func__ <<  "Error: Reduce Library load failed!" << std::endl;
 	}
+}
+
+void WFHandler::operator()(Sockets::Socket& socket_)
+{
+	return;
 }

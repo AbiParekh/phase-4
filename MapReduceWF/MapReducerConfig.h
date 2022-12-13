@@ -26,6 +26,8 @@ public:
 
 	uint32_t getStubPortNumber();
 
+	uint32_t getNumberOfStubs();
+
 	uint32_t getMapBufferSize();
 
 	void setInputDir(std::string);
@@ -41,6 +43,8 @@ public:
 	void setControllerPortNumber(uint32_t);
 
 	void setStubPortNumber(uint32_t);
+	
+	void setNumberOfStubs(uint32_t);
 
 	void setMapBufferSize(uint32_t);
 
@@ -63,6 +67,7 @@ protected:
 	std::string reduceDllLocation_;
 	uint32_t ControllerPort_;
 	uint32_t StubPort_;
+	uint32_t NumberOfStubs_;
 	uint32_t mapBufferSize_;
 
 private:

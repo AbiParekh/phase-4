@@ -17,8 +17,6 @@ public:
 	std::string ipAddress;
 	uint32_t ID;
 
-
-
 	bool startServer();
 };
 
