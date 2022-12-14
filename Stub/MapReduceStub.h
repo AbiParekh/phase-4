@@ -95,7 +95,6 @@ bool MapReduceStub::startProcessor(CallObj& sh, Sockets::SocketConnecter& si, co
 			Show::write("\n  client waiting to connect");
 			::Sleep(100);
 		}
-
 	}
 
 	else if (proc == "reduce")
