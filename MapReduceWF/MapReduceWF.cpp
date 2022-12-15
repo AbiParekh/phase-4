@@ -17,6 +17,10 @@
 MapReducer::MapReducer(std::string configFileLocation) :
 	configurationFileLocation_(configFileLocation) {}
 
+template<typename CallOb>
+MapReducer::MapReducer(std::string configFileLocation, CallOb& co) :
+	configurationFileLocation_(configFileLocation),  coFlag{ true } {}
+
 
 bool MapReducer::reduce(std::string& outputFileName)
 {
@@ -67,6 +71,7 @@ bool MapReducer::doReduce(std::string& outputFileName)
 
 bool MapReducer::MapStepDLL(std::string& dllLocation, const std::string& inputMapDirectory, const std::string& outputMapDirectory)
 {
+	if (coFlag == true);
 	std::vector<std::vector<std::string>> fileListVector;
 	std::vector<std::string> CompletefileList;
 	std::string mapDLLLocation = dllLocation;

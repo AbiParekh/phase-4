@@ -1,15 +1,11 @@
 #include "MapReduceStub.h"
 #include "../SockerCode/Sockets.h"
+
 //#include "../common/Phase4Messages.h"
 
 
-static class ClientHandler
-{
-public:
-    void operator()(Sockets::Socket& socket_);
-    bool testStringHandling(Sockets::Socket& socket_);
-    bool testBufferHandling(Sockets::Socket& socket_);
-};
+
+
 
 using Show = StaticLogger<1>;
 
@@ -51,19 +47,27 @@ int main(int argc, char* argv[])
     Show::title("Testing Sockets", '=');
     Sockets::SocketConnecter si;
     stubHandler sh;
-    ClientHandler ch;
+
+    Sockets::SocketSystem ss;
+    Sockets::SocketListener sl1(9071, Sockets::Socket::IP6), sl2(9072, Sockets::Socket::IP6), sl3(9073, Sockets::Socket::IP6);
     MapReduceStub mrStub(9071, 1);
     std::string configFile = argumentVector.at(1);
 
    // Sockets::Socket clientSocket = accept(0, NULL, NULL);
     // std::thread clientThread(ch, std::move(std::ref(clientSocket)));
-  
-    mrStub.startProcessor(ch, si, "test", argumentVector.at(1));
-    mrStub.startProcessor(ch, si, "map", std::ref(configFile));
-    mrStub.startProcessor(ch, si, "stop", argumentVector.at(1));
 
+    
+   // ch1.setParam("hi");
+    mrStub.startProcessor(sl1, si, "map", std::ref(configFile), 9071);
+    ::Sleep(4000);
 
+    //mrStub.startProcessor(sl2, ch2, si, "test", argumentVector.at(1), 9072);
+ 
+    //mrStub.startProcessor(sl3, ch3, si, "stop", argumentVector.at(1), 9073);
 
+    
+   // sl.stop();
+    std::cout << "Post SL Stop" << std::endl;
 
  //   mrStub.stopServer()
 /*

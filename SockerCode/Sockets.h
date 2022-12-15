@@ -73,6 +73,7 @@ namespace Sockets
         bool shutDown();
         void close();
 
+
         bool validState() { return socket_ != INVALID_SOCKET; }
 
     protected:
@@ -120,6 +121,8 @@ namespace Sockets
         template<typename CallObj>
         bool start(CallObj& co, std::string param);
         void stop();
+ 
+
     private:
         bool bind();
         bool listen();
@@ -136,6 +139,8 @@ namespace Sockets
     *  - You will find an example Callable Object, ClientProc,
     *    used in the test stub below
     */
+
+
     template<typename CallObj>
     bool SocketListener::start(CallObj& co, std::string param)
     {
@@ -152,17 +157,16 @@ namespace Sockets
         // listen on a dedicated thread so server's main thread won't block
         std::cout << "Completed Bind and Listen" << std::endl;
 
-        std::string outputFileName = "";
-        MapReducer mapReducer(param);
-        if (param != "test" || param != "stop")
-        {
-            mapReducer.reduce(std::ref(outputFileName));
-        }
+      
+        
+
        // mapReducer.reduce(std::ref(outputFileName));
         //std::thread mapThread(&MapThreadFunction, mapDLLLocation, inputMapDirectory, outputMapDirectory, fileList, bufferSize, threadID, totalReduceThreads);
         std::thread ListenThread(
             [&, param, co]()
             {
+                
+            
                 StaticLogger<1>::write("\n  -- server waiting for connection");
 
                 while (!acceptFailed_)
@@ -180,27 +184,49 @@ namespace Sockets
                     // start thread to handle client request
 
                     // pass co by value to avoid interactions between threads
+                   
+                    //std::thread mapThread(&MapThreadFunction, mapDLLLocation, inputMapDirectory, outputMapDirectory, fileList, bufferSize, threadID, totalReduceThreads);
+                    
+                    
+                    
+                   // std::thread clientThread();
 
-                    std::thread clientThread(co, std::move(std::ref(clientSocket)));
-                    std::thread::id tempThreadId  = clientThread.get_id();
+
+                    //
+          
+                    
+                    std::thread clientThread(
+                        co, std::ref(clientSocket)
+                     );
+
+                    std::thread::id tempThreadId = clientThread.get_id();
                     std::ostringstream conv;
                     conv << tempThreadId;
                     std::string sid = ", thread id = " + conv.str();
                     std::cout << "\n  created ClientHandler Thread " + sid;
+
                     clientThread.join();  // detach - listener won't access thread again
+
+                
                 }
                 StaticLogger<1>::write("\n  -- Listen thread stopping");
             }
         );
-        ::Sleep(1500);
-        std::cout << "ATTEMPTING TO DETATCH LISTEN THREAD" << std::endl;
-        ListenThread.detach();
+
+
+       ListenThread.detach();
+
         return true;
     }
 
 
 
+
     void clientTestStringHandling(Socket& si);
+    void clientRunMap(Socket& si, std::string param);
+    
+
 }
+
 #endif
 

@@ -9,7 +9,20 @@
 
 using Show = StaticLogger<1>;
 
+static class ClientHandler
+{
 
+public:
+	void operator()(Sockets::Socket& socket_);
+	bool testStringHandling(Sockets::Socket& socket_);
+	bool testBufferHandling(Sockets::Socket& socket_);
+	void setParam(std::string params);
+	// MapReducer mapReducer(param);
+
+private:
+	std::string param;
+
+};
 
 class MapReduceStub
 {
@@ -27,8 +40,8 @@ public:
 	template<typename CallObj>
 	bool startServer(CallObj& SH, Sockets::SocketConnecter& SI);
 
-	template<typename CallObj>
-	bool startProcessor(CallObj& SH, Sockets::SocketConnecter& SI, std::string procID,std::string args);
+
+	bool startProcessor(Sockets::SocketListener& SL, Sockets::SocketConnecter& SI, std::string procID,std::string args, uint32_t portnumber);
 
 	bool startServer();
 };
@@ -51,6 +64,7 @@ bool MapReduceStub::startServer(CallObj& sh, Sockets::SocketConnecter& si)
 	//stubHandler sh;
 
 	sl.start(sh);
+
 
 	while (!si.connect("localhost", 9071))
 	{
@@ -75,26 +89,31 @@ bool MapReduceStub::startServer(CallObj& sh, Sockets::SocketConnecter& si)
 	return true;
 }
 
-template<typename CallObj>
-bool MapReduceStub::startProcessor(CallObj& sh, Sockets::SocketConnecter& si, const std::string proc, const std::string configFileLocation )
+
+bool MapReduceStub::startProcessor(Sockets::SocketListener& sl, Sockets::SocketConnecter& si, const std::string proc, std::string configFileLocation, uint32_t port )
 {
-	Sockets::SocketSystem ss;
-	Sockets::SocketListener sl(port, Sockets::Socket::IP6);
+
 	// Pass in Directories into construction of Map Reducer
+	ClientHandler co;
 
-
-
+	co.setParam((configFileLocation));
 	//stubHandler sh;
 	if(proc == "map")
 	{
-		
-		sl.start(sh, std::ref(configFileLocation));
 
-		while (!si.connect("localhost", 9071))
+		
+		sl.start(co, std::ref(configFileLocation));
+
+		while (!si.connect("localhost", port))
 		{
 			Show::write("\n  client waiting to connect");
 			::Sleep(100);
 		}
+		Show::title("Starting string test on client");
+		//clientTestStringHandling(si);
+		clientRunMap(si, configFileLocation);
+
+
 	}
 
 	else if (proc == "reduce")
@@ -102,9 +121,9 @@ bool MapReduceStub::startProcessor(CallObj& sh, Sockets::SocketConnecter& si, co
 
 	else if (proc == "test")
 	{
-		sl.start(sh,"test");
+		sl.start(co,proc);
 
-		while (!si.connect("localhost", 9071))
+		while (!si.connect("localhost", port))
 		{
 			Show::write("\n  client waiting to connect");
 			::Sleep(100);
@@ -119,9 +138,10 @@ bool MapReduceStub::startProcessor(CallObj& sh, Sockets::SocketConnecter& si, co
 		si.sendString("TEST_STOP");
 		Show::write("\n\n  client calling send shutdown\n");
 		si.shutDownSend();
-		sl.stop();
-		std::cout << "Post SL Stop" << std::endl;
+
 	}
+
+	
 
 	return true;
 }

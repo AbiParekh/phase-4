@@ -534,10 +534,18 @@ void SocketListener::stop()
 class ClientHandler
 {
 public:
+   // ClientHandler(std::string p) : param{ p } {};
+
     void operator()(Socket& socket_);
     bool testStringHandling(Socket& socket_);
     bool testBufferHandling(Socket& socket_);
+    bool runMap(Socket&, std::string&);
+    void setParam(std::string p) ;
+
+private:
+    std::string param;
 };
+
 
 //----< Client Handler thread starts running this function >-----------------
 
@@ -547,26 +555,42 @@ void clearBuffer(Socket::byte* buffer, size_t BufLen)
         buffer[i] = '\0';
 }
 
+void ClientHandler::setParam(std::string p ) 
+{ 
+    param = p; 
+}
+
 void ClientHandler::operator()(Socket& socket_)
 {
+
+    // interpret test command
     while (true)
     {
-        // interpret test command
-
         std::string command = Socket::removeTerminator(socket_.recvString());
         Show::write("\n  server rcvd command: " + command);
+
+        if (command == "RUN_MAP")
+        {
+            if (runMap(socket_, param))
+            {
+                Show::write("CH_SHUTDOWN" + command);
+                socket_.sendString(command);
+                break;
+            }
+        }
+
+        if (command.size() == 0)
+        {
+            Show::write("\n  client connection closed");
+            break;
+        }
+
         if (command == "Done")
         {
             Show::write("\n  server sent : " + command);
             socket_.sendString(command);
             break;
         }
-        if (command.size() == 0)
-        {
-            Show::write("\n  client connection closed");
-            break;
-        }
-        //Show::write("\n  server recvd: " + command);
 
         if (command == "TEST_STRING_HANDLING")
         {
@@ -576,6 +600,7 @@ void ClientHandler::operator()(Socket& socket_)
                 Show::write("\n  ----String Handling test failed\n");
             continue; // go back and get another command
         }
+
         if (command == "TEST_BUFFER_HANDLING")
         {
             if (testBufferHandling(socket_))
@@ -585,7 +610,6 @@ void ClientHandler::operator()(Socket& socket_)
             continue;  // get another command
         }
     }
-
     // we get here if command isn't requesting a test, e.g., "TEST_STOP"
 
     Show::write("\n");
@@ -595,6 +619,38 @@ void ClientHandler::operator()(Socket& socket_)
     Show::write("\n  ClientHandler thread terminating");
 }
 
+
+
+bool ClientHandler::runMap(Socket& socket_, std::string& command)
+{
+    std::string str = "CH_RUNNING_MAP";
+    if (socket_.sendString(str))
+    {
+        Show::write("\n  server sent : " + str);
+    }
+
+    while (true)
+    {
+        //add Mutex, CondWait here
+
+                MapReducer mapReducer(command);
+                std::string outputFileName = "";
+                mapReducer.reduce(std::ref(outputFileName));
+                break;
+            
+    }
+    str = "CH_FINISHED_MAP";
+    if (socket_.sendString(str))
+    {
+        Show::write("\n  server sent : " + str);
+    }
+
+    Show::write("\n  End of string handling test in ClientHandler");
+    return true;
+
+
+
+}
 //----< test string handling >-----------------------------------------------
 /*
 *   Creates strings, sends to server, then reads strings server echos back.
@@ -687,26 +743,52 @@ bool ClientHandler::testBufferHandling(Socket& socket_)
 }
 
 //----< test string handling - server echos back client sent string >--------
+void Sockets::clientRunMap(Socket& si,  std::string arg)
+{
+    std::string command = "RUN_MAP";
+    si.sendString(command);
+    Show::write("\n  client sent : " + command);
+
+    while (true)
+    {
+        std::string str = Socket::removeTerminator(si.recvString()); // This is where client receives from server
+        if (str.size() == 0)
+        {
+            Show::write("\n  client detected closed connection");
+            break;
+        }
+        Show::write("\n  client recvd: " + str);
+        if (str == "\n CH_FINISHED_MAP")
+        {
+            Show::write("\n  End of string handling test in client");
+            break;
+        }
+    }
+}
+
 
 void Sockets::clientTestStringHandling(Socket& si)
 {
     std::string command = "TEST_STRING_HANDLING";
-    si.sendString(command, '\0');
+    si.sendString(command);
     Show::write("\n  client sent : " + command);
 
-    for (size_t i = 0; i < 5; ++i)
+    for (size_t i = 0; i < 1; ++i)
     {
         std::string text = "Hello World " + std::string("#") + Conv<size_t>::toString(i + 1);
         si.sendString(text);
         Show::write("\n  client sent : " + text);
     }
+
+
+
     command = "TEST_END";
     si.sendString(command);
     Show::write("\n  client sent : " + command);
 
     while (true)
     {
-        std::string str = Socket::removeTerminator(si.recvString());
+        std::string str = Socket::removeTerminator(si.recvString()); // This is where client receives from server
         if (str.size() == 0)
         {
             Show::write("\n  client detected closed connection");

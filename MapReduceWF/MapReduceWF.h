@@ -7,12 +7,13 @@
 #include <thread>	
 #include <mutex>
 #include <iostream>
-
+#include <winsock2.h> 
 #include "../common/FileIO.h"
 #include "FinalMerge.h"
 #include "MapReducerConfig.h"
 #include "../common/MapInterface.h"
 #include "../common/ReduceInterface.h"
+
 
 
 typedef void* (*pvFunctv)();
@@ -27,6 +28,10 @@ public:
 
 	// Constructor with inputs
 	MapReducer(std::string configFileLocation);
+
+	// Constructor that acccepts callable obj
+	template<typename CallObj>
+	MapReducer(std::string configFileLocation, CallObj& co);
 
 	bool reduce(std::string& outputFileName);
 
@@ -43,6 +48,14 @@ private:
 
 	bool MergeReduceThreads(const std::string& outputReduceDirectory);
 
+
+	struct callable
+	{
+		void operator()();
+	};
+	template<typename CallObj>
+	CallObj callObj();
+
 	// Variables with Map Reducer
 
 	const std::size_t bufferSize{ 3000 };
@@ -58,6 +71,10 @@ private:
 	FileIOManagement fileManager;
 
 	Final finalizer;
+
+	bool coFlag = false;
+
+
 
 };
 
